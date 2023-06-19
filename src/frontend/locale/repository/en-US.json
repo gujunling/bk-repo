@@ -740,5 +740,8 @@
     "noProjectData":"No Project Data",
     "relatedUsers":"Related Users",
     "assetUserTip": "Please start with g_",
-    "createGroupToken": "Create Token"
+    "createGroupToken": "Create Token",
+    "correctDependencies":"Correct dependencies",
+    "plugins":"Plugins",
+    "reverseDependencies":"Reverse dependencies"
 }

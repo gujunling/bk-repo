@@ -193,5 +193,65 @@ export default {
                 }
             }
         )
+    },
+    /**
+     *  maven仓库获取正向依赖
+     * @param { projectId } string
+     * @param { repoName } string
+     * @param { packageKey } string
+     * @param { version } string
+     * @param { pageNumber } number
+     * @param { pageSize } number
+     * @returns
+     */
+    getCorrectDependencies (_, { projectId, repoName, packageKey, version, pageNumber, pageSize }) {
+        return Vue.prototype.$ajax.get(`/maven/ext/dependencies/${projectId}/${repoName}`, {
+            params: {
+                packageKey,
+                version,
+                pageNumber,
+                pageSize
+            }
+        })
+    },
+    /**
+     *  maven仓库获取插件
+     * @param { projectId } string
+     * @param { repoName } string
+     * @param { packageKey } string
+     * @param { version } string
+     * @param { pageNumber } number
+     * @param { pageSize } number
+     * @returns
+     */
+    getCorrectPlugins (_, { projectId, repoName, packageKey, version, pageNumber, pageSize }) {
+        return Vue.prototype.$ajax.get(`/maven/ext/plugins/${projectId}/${repoName}`, {
+            params: {
+                packageKey,
+                version,
+                pageNumber,
+                pageSize
+            }
+        })
+    },
+    /**
+     *  maven仓库获取反向依赖
+     * @param { projectId } string
+     * @param { repoName } string
+     * @param { packageKey } string
+     * @param { version } string
+     * @param { pageNumber } number
+     * @param { pageSize } number
+     * @returns
+     */
+    getReverseDependencies (_, { projectId, repoName, packageKey, version, pageNumber, pageSize }) {
+        return Vue.prototype.$ajax.get(`/maven/ext/dependencies/reverse/${projectId}/${repoName}`, {
+            params: {
+                packageKey,
+                version,
+                pageNumber,
+                pageSize
+            }
+        })
     }
 }
