@@ -65,6 +65,12 @@
                     <div class="repo-generic-actions bk-button-group">
                         <bk-button
                             v-if="multiSelect.length"
+                            @click="handlerMultiDownload">
+                            {{$t('batchDownload')}}
+                        </bk-button>
+                        <bk-button
+                            v-if="multiSelect.length"
+                            class="ml10"
                             @click="handlerMultiDelete()">
                             {{ $t('batchDeletion') }}
                         </bk-button>
@@ -688,6 +694,17 @@
                         theme: 'error',
                         message
                     })
+                })
+            },
+            handlerMultiDownload () {
+                const commonPath = this.selectedTreeNode.fullPath
+                const ids = this.multiSelect.map(r => r.id)
+                const url = `${this.projectId}/${this.repoName}/${encodeURIComponent(commonPath)}?id=<${ids.join(':')}>`
+                this.$ajax.get(`/generic/multi/false/${url}`).then(() => {
+                    window.open(
+                        '/web' + `/generic/multi/true/${url}`,
+                        '_self'
+                    )
                 })
             },
             handlerForbid ({ fullPath, metadata: { forbidStatus } }) {
