@@ -32,6 +32,22 @@ export default {
         userName () {
             return this.userInfo.username || '<USERNAME>'
         },
+        // 当前仓库类型(本地、远程、虚拟)
+        storeType () {
+            return this.$route.query.storeType || ''
+        },
+        // 虚拟仓库的仓库来源，虚拟仓库时需要更换repoName为此值
+        sourceRepoName () {
+            return this.$route.query.sourceName || ''
+        },
+        // 是否是 软件源模式
+        whetherSoftware () {
+            return this.$route.path.startsWith('/software')
+        },
+        // 远程仓库下，软件源模式下不显示某些操作
+        noShowOption () {
+            return this.storeType === 'remote' || this.whetherSoftware
+        },
         dockerGuide () {
             return [
                 {
@@ -43,21 +59,23 @@ export default {
                         }
                     ]
                 },
+                this.noShowOption
+                    ? undefined
+                    : {
+                        title: this.$t('push'),
+                        main: [
+                            {
+                                subTitle: this.$t('dockerPushGuideSubTitle1'),
+                                codeList: [`docker tag <LOCAL_IMAGE_TAG> ${this.domain.docker}/${this.projectId}/${this.repoName}/${this.packageName}`]
+                            },
+                            {
+                                subTitle: this.$t('dockerPushGuideSubTitle2'),
+                                codeList: [`docker push ${this.domain.docker}/${this.projectId}/${this.repoName}/${this.packageName}`]
+                            }
+                        ]
+                    },
                 {
-                    title: this.$t('push'),
-                    main: [
-                        {
-                            subTitle: this.$t('dockerPushGuideSubTitle1'),
-                            codeList: [`docker tag <LOCAL_IMAGE_TAG> ${this.domain.docker}/${this.projectId}/${this.repoName}/${this.packageName}`]
-                        },
-                        {
-                            subTitle: this.$t('dockerPushGuideSubTitle2'),
-                            codeList: [`docker push ${this.domain.docker}/${this.projectId}/${this.repoName}/${this.packageName}`]
-                        }
-                    ]
-                },
-                {
-                    title: this.$t('download'),
+                    title: this.$t('pull'),
                     main: [
                         {
                             subTitle: this.$t('dockerDownloadGuideSubTitle'),
@@ -65,7 +83,7 @@ export default {
                         }
                     ]
                 }
-            ]
+            ].filter(Boolean)
         },
         dockerInstall () {
             return [
@@ -131,17 +149,19 @@ export default {
                         }
                     ]
                 },
+                this.noShowOption
+                    ? undefined
+                    : {
+                        title: this.$t('push'),
+                        main: [
+                            {
+                                subTitle: this.$t('pushGuideSubTitle'),
+                                codeList: ['npm publish']
+                            }
+                        ]
+                    },
                 {
-                    title: this.$t('push'),
-                    main: [
-                        {
-                            subTitle: this.$t('pushGuideSubTitle'),
-                            codeList: ['npm publish']
-                        }
-                    ]
-                },
-                {
-                    title: this.$t('download'),
+                    title: this.$t('pull'),
                     main: [
                         {
                             subTitle: this.$t('npmDownloadGuideSubTitle1'),
@@ -153,7 +173,7 @@ export default {
                         }
                     ]
                 }
-            ]
+            ].filter(Boolean)
         },
         npmInstall () {
             return [
@@ -206,7 +226,7 @@ export default {
                     title: this.$t('mavenGuideTitle'),
                     main: [
                         {
-                            subTitle: this.$t('mavenGuideSubTitle1'),
+                            subTitle: this.noShowOption ? this.$t('mavenGuideSubTitle1') : this.$t('mavenGuideSubTitle1Special'),
                             codeList: [
                                 '<mirror>',
                                 `       <id>${this.projectId}-${this.repoName}</id>`,
@@ -227,97 +247,99 @@ export default {
                         }
                     ]
                 },
-                {
-                    title: this.$t('push'),
-                    main: [
-                        {
-                            subTitle: this.$t('mavenPushGuideSubTitle1'),
-                            codeList: [
-                                '<distributionManagement>',
-                                '       <repository>',
-                                '               <!--id值与配置的server id 一致-->',
-                                `               <id>${this.projectId}-${this.repoName}</id>`,
-                                `               <name>${this.repoName}</name>`,
-                                `               <url>${this.repoUrl}/</url>`,
-                                '       </repository>',
-                                '</distributionManagement>'
-                            ]
-                        },
-                        {
-                            subTitle: this.$t('mavenPushGuideSubTitle2'),
-                            codeList: [
-                                'mvn clean deploy'
-                            ]
-                        },
-                        {
-                            subTitle: this.$t('mavenPushGuideSubTitle3'),
-                            codeList: [
-                                'plugins {',
-                                '    id "maven-publish"',
-                                '}',
-                                'publishing {',
-                                '    publications {',
-                                '        maven(MavenPublication) {',
-                                '            groupId = "com.company.group"',
-                                '            version = "1.0"',
-                                '            from components.java',
-                                '        }',
-                                '    }',
-                                '    repositories {',
-                                '        maven {',
-                                '            url = "${cpackUrl}"',
-                                '            credentials {',
-                                '                username = "${cpackUsername}"',
-                                '                password = "${cpackPassword}"',
-                                '            }',
-                                '        }',
-                                '    }',
-                                '}'
-                            ]
-                        },
-                        {
-                            subTitle: this.$t('mavenPushGuideSubTitle4'),
-                            codeList: [
-                                'gradle publish'
-                            ]
-                        },
-                        {
-                            subTitle: this.$t('mavenPushGuideSubTitle5'),
-                            codeList: [
-                                'plugins {',
-                                '    `maven-publish`',
-                                '}',
-                                'publishing {',
-                                '    publications {',
-                                '        create<MavenPublication>("maven") {',
-                                '            groupId = "com.company.group"',
-                                '            version = "1.0"',
-                                '            from(components["java"])',
-                                '        }',
-                                '    }',
-                                '    repositories {',
-                                '        maven {',
-                                '            val cpackUrl: String by project',
-                                '            val cpackUsername: String by project',
-                                '            val cpackPassword: String by project',
-                                '            url = uri(cpackUrl)',
-                                '            credentials {',
-                                '                username = cpackUsername',
-                                '                password = cpackPassword',
-                                '            }',
-                                '        }',
-                                '    }',
-                                '}'
-                            ]
-                        },
-                        {
-                            subTitle: this.$t('mavenPushGuideSubTitle6'),
-                            codeList: [
-                                'gradle publish'
-                            ]
-                        }
-                    ]
-                },
+                this.noShowOption
+                    ? undefined
+                    : {
+                        title: this.$t('push'),
+                        main: [
+                            {
+                                subTitle: this.$t('mavenPushGuideSubTitle1'),
+                                codeList: [
+                                    '<distributionManagement>',
+                                    '       <repository>',
+                                    `               <!--${this.$t('mavenPushGuideCodeListAnnotate')}-->`,
+                                    `               <id>${this.projectId}-${this.repoName}</id>`,
+                                    `               <name>${this.repoName}</name>`,
+                                    `               <url>${this.repoUrl}/</url>`,
+                                    '       </repository>',
+                                    '</distributionManagement>'
+                                ]
+                            },
+                            {
+                                subTitle: this.$t('mavenPushGuideSubTitle2'),
+                                codeList: [
+                                    'mvn clean deploy'
+                                ]
+                            },
+                            {
+                                subTitle: this.$t('mavenPushGuideSubTitle3'),
+                                codeList: [
+                                    'plugins {',
+                                    '    id "maven-publish"',
+                                    '}',
+                                    'publishing {',
+                                    '    publications {',
+                                    '        maven(MavenPublication) {',
+                                    '            groupId = "com.company.group"',
+                                    '            version = "1.0"',
+                                    '            from components.java',
+                                    '        }',
+                                    '    }',
+                                    '    repositories {',
+                                    '        maven {',
+                                    '            url = "${cpackUrl}"',
+                                    '            credentials {',
+                                    '                username = "${cpackUsername}"',
+                                    '                password = "${cpackPassword}"',
+                                    '            }',
+                                    '        }',
+                                    '    }',
+                                    '}'
+                                ]
+                            },
+                            {
+                                subTitle: this.$t('mavenPushGuideSubTitle4'),
+                                codeList: [
+                                    'gradle publish'
+                                ]
+                            },
+                            {
+                                subTitle: this.$t('mavenPushGuideSubTitle5'),
+                                codeList: [
+                                    'plugins {',
+                                    '    `maven-publish`',
+                                    '}',
+                                    'publishing {',
+                                    '    publications {',
+                                    '        create<MavenPublication>("maven") {',
+                                    '            groupId = "com.company.group"',
+                                    '            version = "1.0"',
+                                    '            from(components["java"])',
+                                    '        }',
+                                    '    }',
+                                    '    repositories {',
+                                    '        maven {',
+                                    '            val cpackUrl: String by project',
+                                    '            val cpackUsername: String by project',
+                                    '            val cpackPassword: String by project',
+                                    '            url = uri(cpackUrl)',
+                                    '            credentials {',
+                                    '                username = cpackUsername',
+                                    '                password = cpackPassword',
+                                    '            }',
+                                    '        }',
+                                    '    }',
+                                    '}'
+                                ]
+                            },
+                            {
+                                subTitle: this.$t('mavenPushGuideSubTitle6'),
+                                codeList: [
+                                    'gradle publish'
+                                ]
+                            }
+                        ]
+                    },
                 {
                     title: this.$t('pull'),
                     main: [
@@ -398,7 +420,7 @@ export default {
                         }
                     ]
                 }
-            ]
+            ].filter(Boolean)
         },
         mavenInstall () {
             return [
@@ -449,23 +471,25 @@ export default {
                         }
                     ]
                 },
-                {
-                    title: this.$t('push'),
-                    main: [
-                        {
-                            subTitle: this.$t('helmPushGuideSubTitle1'),
-                            codeList: [
-                                `curl -F "chart=@<FILE_NAME>" -u ${this.userName}:<PERSONAL_ACCESS_TOKEN> ${this.domain.helm}/api/${this.projectId}/${this.repoName}/charts`
-                            ]
-                        },
-                        {
-                            subTitle: this.$t('helmPushGuideSubTitle2'),
-                            codeList: [
-                                `curl -F "prov=@<PROV_FILE_NAME>" -u ${this.userName}:<PERSONAL_ACCESS_TOKEN> ${this.domain.helm}/api/${this.projectId}/${this.repoName}/charts`
-                            ]
-                        }
-                    ]
-                },
+                this.noShowOption
+                    ? undefined
+                    : {
+                        title: this.$t('push'),
+                        main: [
+                            {
+                                subTitle: this.$t('helmPushGuideSubTitle1'),
+                                codeList: [
+                                    `curl -F "chart=@<FILE_NAME>" -u ${this.userName}:<PERSONAL_ACCESS_TOKEN> ${this.domain.helm}/api/${this.projectId}/${this.repoName}/charts`
+                                ]
+                            },
+                            {
+                                subTitle: this.$t('helmPushGuideSubTitle2'),
+                                codeList: [
+                                    `curl -F "prov=@<PROV_FILE_NAME>" -u ${this.userName}:<PERSONAL_ACCESS_TOKEN> ${this.domain.helm}/api/${this.projectId}/${this.repoName}/charts`
+                                ]
+                            }
+                        ]
+                    },
                 {
                     title: this.$t('pull'),
                     main: [
@@ -477,7 +501,7 @@ export default {
                         }
                     ]
                 }
-            ]
+            ].filter(Boolean)
         },
         helmInstall () {
             return [
@@ -524,19 +548,21 @@ export default {
                         }
                     ]
                 },
+                this.noShowOption
+                    ? undefined
+                    : {
+                        title: this.$t('push'),
+                        main: [
+                            {
+                                subTitle: this.$t('pushGuideSubTitle'),
+                                codeList: [
+                                    `curl -u ${this.userName}:<PERSONAL_ACCESS_TOKEN> -X PUT ${this.repoUrl}/ -T <RPM_FILE_NAME>`
+                                ]
+                            }
+                        ]
+                    },
                 {
-                    title: this.$t('push'),
-                    main: [
-                        {
-                            subTitle: this.$t('pushGuideSubTitle'),
-                            codeList: [
-                                `curl -u ${this.userName}:<PERSONAL_ACCESS_TOKEN> -X PUT ${this.repoUrl}/ -T <RPM_FILE_NAME>`
-                            ]
-                        }
-                    ]
-                },
-                {
-                    title: this.$t('download'),
+                    title: this.$t('pull'),
                     main: [
                         {
                             subTitle: this.$t('rpmPullGuideSunTitle1'),
@@ -552,7 +578,7 @@ export default {
                         }
                     ]
                 }
-            ]
+            ].filter(Boolean)
         },
         rpmInstall () {
             return [
@@ -615,17 +641,19 @@ export default {
                         }
                     ]
                 },
-                {
-                    title: this.$t('push'),
-                    main: [
-                        {
-                            subTitle: this.$t('pypiPushGuideSubTitle'),
-                            codeList: [
-                                `python3 -m twine upload -r ${this.repoName} dist/*`
-                            ]
-                        }
-                    ]
-                },
+                this.noShowOption
+                    ? undefined
+                    : {
+                        title: this.$t('push'),
+                        main: [
+                            {
+                                subTitle: this.$t('pypiPushGuideSubTitle'),
+                                codeList: [
+                                    `python3 -m twine upload -r ${this.repoName} dist/*`
+                                ]
+                            }
+                        ]
+                    },
                 {
                     title: this.$t('pull'),
                     main: [
@@ -637,7 +665,7 @@ export default {
                         }
                     ]
                 }
-            ]
+            ].filter(Boolean)
         },
         pypiInstall () {
             return [
@@ -679,17 +707,19 @@ export default {
                         }
                     ]
                 },
-                {
-                    title: this.$t('push'),
-                    main: [
-                        {
-                            subTitle: this.$t('composerPushGuideSubTitle'),
-                            codeList: [
-                                `curl -X PUT -u ${this.userName}:<PERSONAL_ACCESS_TOKEN> "${this.repoUrl}/" -T <PACKAGE_FILE>`
-                            ]
-                        }
-                    ]
-                },
+                this.noShowOption
+                    ? undefined
+                    : {
+                        title: this.$t('push'),
+                        main: [
+                            {
+                                subTitle: this.$t('composerPushGuideSubTitle'),
+                                codeList: [
+                                    `curl -X PUT -u ${this.userName}:<PERSONAL_ACCESS_TOKEN> "${this.repoUrl}/" -T <PACKAGE_FILE>`
+                                ]
+                            }
+                        ]
+                    },
                 {
                     title: this.$t('pull'),
                     main: [
@@ -701,7 +731,7 @@ export default {
                         }
                     ]
                 }
-            ]
+            ].filter(Boolean)
         },
         composerInstall () {
             return [
@@ -734,17 +764,19 @@ export default {
                         }
                     ]
                 },
-                {
-                    title: this.$t('push'),
-                    main: [
-                        {
-                            subTitle: this.$t('nugetPushGuideSubTitle'),
-                            codeList: [
-                                `nuget push -Source "${this.repoName}" <LOCAL_PACKAGE_NAME>.nupkg`
-                            ]
-                        }
-                    ]
-                },
+                this.noShowOption
+                    ? undefined
+                    : {
+                        title: this.$t('push'),
+                        main: [
+                            {
+                                subTitle: this.$t('nugetPushGuideSubTitle'),
+                                codeList: [
+                                    `nuget push -Source "${this.repoName}" <LOCAL_PACKAGE_NAME>.nupkg`
+                                ]
+                            }
+                        ]
+                    },
                 {
                     title: this.$t('pull'),
                     main: [
@@ -756,18 +788,20 @@ export default {
                         }
                     ]
                 },
-                {
-                    title: this.$t('delete'),
-                    main: [
-                        {
-                            subTitle: this.$t('nugetDeleteGuideSubTitle'),
-                            codeList: [
-                                `nuget delete -Source "${this.repoName}" ${this.packageName} ${this.versionLabel}`
-                            ]
-                        }
-                    ]
-                }
-            ]
+                (this.storeType === 'virtual' || this.whetherSoftware)
+                    ? undefined
+                    : {
+                        title: this.$t('delete'),
+                        main: [
+                            {
+                                subTitle: this.$t('nugetDeleteGuideSubTitle'),
+                                codeList: [
+                                    `nuget delete -Source "${this.repoName}" ${this.packageName} ${this.versionLabel}`
+                                ]
+                            }
+                        ]
+                    }
+            ].filter(Boolean)
         },
         nugetInstall () {
             return [

@@ -21,6 +21,14 @@ export const repoEnum = MODE_CONFIG === 'ci'
         'nuget'
     ]
 
+// 远程及虚拟仓库支持创建的仓库
+export const repoSupportEnum = [
+    'maven',
+    'npm',
+    'pypi',
+    'nuget'
+]
+
 // 文件类型
 export const fileType = [
     'apk',
@@ -143,3 +151,25 @@ export const FILTER_METHOD_SEVERITY = 1
 export const FILTER_METHOD_RISKY_COMPONENT = 2
 // 通过风险组件版本过滤
 export const FILTER_METHOD_RISKY_COMPONENT_VERSION = 3
+
+// 制品仓库类型(本地/远程/虚拟)
+export const storeTypeEnum = [
+    {
+        id: 'local',
+        name: 'localStore',
+        icon: 'local-store',
+        info: 'localStoreInfo'
+    },
+    {
+        id: 'remote',
+        name: 'remoteStore',
+        icon: 'remote-store',
+        info: 'remoteStoreInfo'
+    },
+    {
+        id: 'virtual',
+        name: 'virtualStore',
+        icon: 'virtual-store',
+        info: 'virtualStoreInfo'
+    }
+]

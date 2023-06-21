@@ -43,15 +43,15 @@
                                 class="version-operation"
                                 :list="[
                                     ...(!$version.metadata.forbidStatus ? [
-                                        permission.edit && {
+                                        showPromotion && {
                                             label: $t('upgrade'), clickEvent: () => changeStageTagHandler($version),
                                             disabled: ($version.stageTag || '').includes('@release')
                                         },
                                         repoType !== 'docker' && { label: $t('download'), clickEvent: () => downloadPackageHandler($version) },
                                         showRepoScan && { label: $t('scanArtifact'), clickEvent: () => scanPackageHandler($version) }
                                     ] : []),
-                                    { clickEvent: () => changeForbidStatusHandler($version), label: $version.metadata.forbidStatus ? $t('liftBan') : $t('forbiddenUse') },
-                                    permission.delete && { label: $t('delete'), clickEvent: () => deleteVersionHandler($version) }
+                                    (!(storeType === 'virtual') && !whetherSoftware) && { clickEvent: () => changeForbidStatusHandler($version), label: $version.metadata.forbidStatus ? $t('liftBan') : $t('forbiddenUse') },
+                                    (!(storeType === 'virtual') && permission.delete && !whetherSoftware) && { label: $t('delete'), clickEvent: () => deleteVersionHandler($version) }
                                 ]"></operation-list>
                         </div>
                     </infinite-scroll>
@@ -141,9 +141,28 @@
             currentVersion () {
                 return this.versionList.find(version => version.name === this.version)
             },
+            // 当前仓库类型
+            storeType () {
+                return this.$route.query.storeType || ''
+            },
+            // 是否是 软件源模式
+            whetherSoftware () {
+                return this.$route.path.startsWith('/software')
+            },
             showRepoScan () {
+                // 虚拟仓库屏蔽安全扫描操作
+                // 软件源屏蔽安全扫描操作
                 const show = RELEASE_MODE !== 'community' || SHOW_ANALYST_MENU
-                return show && this.scannerSupportPackageType.join(',').toLowerCase().includes(this.repoType)
+                return show && this.scannerSupportPackageType.join(',').toLowerCase().includes(this.repoType) && !(this.storeType === 'virtual') && !this.whetherSoftware
+            },
+            showPromotion () {
+                // 远程或虚拟仓库不显示晋级操作
+                // 软件源不显示晋级操作
+                return this.permission.edit && !(this.storeType === 'remote') && !(this.storeType === 'virtual') && !this.whetherSoftware
+            },
+            // 虚拟仓库的仓库来源，虚拟仓库时需要更换repoName为此值
+            sourceRepoName () {
+                return this.$route.query.sourceName || ''
             }
         },
         created () {
@@ -185,7 +204,8 @@
                     packageKey: this.packageKey,
                     current: this.pagination.current,
                     limit: this.pagination.limit,
-                    version: this.versionInput
+                    version: this.versionInput,
+                    srcRepo: this.sourceRepoName || undefined
                 }).then(({ records, totalRecords }) => {
                     load ? this.versionList.push(...records) : (this.versionList = records)
                     this.pagination.count = totalRecords
@@ -210,7 +230,7 @@
                 this.infoLoading = true
                 this.getPackageInfo({
                     projectId: this.projectId,
-                    repoName: this.repoName,
+                    repoName: this.storeType === 'virtual' ? this.sourceRepoName : this.repoName,
                     packageKey: this.packageKey
                 }).then(info => {
                     this.pkg = info
@@ -274,7 +294,8 @@
             },
             downloadPackageHandler (row = this.currentVersion) {
                 if (this.repoType === 'docker') return
-                const url = `/repository/api/version/download/${this.projectId}/${this.repoName}?packageKey=${this.packageKey}&version=${row.name}&download=true`
+                const repoName = this.storeType === 'virtual' ? this.sourceRepoName : this.repoName
+                const url = `/repository/api/version/download/${this.projectId}/${repoName}?packageKey=${this.packageKey}&version=${row.name}&download=true`
                 this.$ajax.head(url).then(() => {
                     window.open(
                         '/web' + url,
@@ -338,7 +359,7 @@
         }
     }
     .common-version-main {
-        height: calc(100% - 100px);
+        height: calc(100% - 70px);
         .common-version {
             width: 250px;
             height: 100%;

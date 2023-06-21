@@ -1,17 +1,58 @@
 <template>
     <div class="repo-list-container" v-bkloading="{ isLoading }">
         <div class="ml20 mr20 mt10 flex-between-center">
-            <bk-button icon="plus" theme="primary" @click="createRepo">{{ $t('create') }}</bk-button>
+            <bk-dropdown-menu
+                ref="dropdownHover"
+                align="left"
+                trigger="click"
+                @show="isDropdownShow = true"
+                @hide="isDropdownShow = false">
+                <div slot="dropdown-trigger">
+                    <bk-button
+                        icon="plus"
+                        theme="primary"
+                        :icon-right="isDropdownShow ? 'angle-up' : 'angle-down'"
+                    >{{ $t('create') }}</bk-button>
+                </div>
+                <!-- 使用bk-link替代之前的 a 标签可以设置某个操作的禁用 -->
+                <ul class="bk-dropdown-list" slot="dropdown-content">
+                    <li v-for="item in storeTypeEnum" :key="item.name">
+                        <bk-link theme="default" href="javascript:;" @click="handlerCreateStore(item.id)">
+                            <dl>
+                                <dt class="flex-align-center">
+                                    <Icon class="pr5" :name="item.icon" size="16" />
+                                    <span> {{$t(item.name)}} </span>
+                                </dt>
+                                <dd>
+                                    <span class="dropdown-list-info">{{$t(item.info)}}</span>
+                                </dd>
+                            </dl>
+                        </bk-link>
+                    </li>
+                </ul>
+            </bk-dropdown-menu>
             <div class="flex-align-center">
                 <bk-input
                     v-model.trim="query.name"
                     class="w250"
-                    :placeholder="repoEnterTip"
+                    :placeholder="$t('repoEnterTip')"
                     clearable
                     @enter="handlerPaginationChange()"
                     @clear="handlerPaginationChange()"
                     right-icon="bk-icon icon-search">
                 </bk-input>
+                <bk-select
+                    v-model="query.category"
+                    class="ml10 w250"
+                    @change="handlerPaginationChange()"
+                    :placeholder="$t('allStoreTypes')">
+                    <bk-option v-for="category in storeTypeEnum" :key="category.id" :id="category.id" :name="$t(category.name)">
+                        <div class="flex-align-center">
+                            <Icon size="20" :name="category.icon" />
+                            <span class="ml10 flex-1 text-overflow">{{$t(category.name)}}</span>
+                        </div>
+                    </bk-option>
+                </bk-select>
                 <bk-select
                     v-model="query.type"
                     class="ml10 w250"
@@ -44,6 +85,11 @@
                         class="mr5 repo-tag SUCCESS" :data-name="$t('built-in')"></span>
                     <span v-if="row.configuration.settings.system" class="mr5 repo-tag" :data-name="$t('system')"></span>
                     <span v-if="row.public" class="mr5 repo-tag WARNING" :data-name="$t('public')"></span>
+                </template>
+            </bk-table-column>
+            <bk-table-column :label="$t('storeTypes')" width="120">
+                <template #default="{ row }">
+                    <span>{{ $t((row.category.toLowerCase() || 'local') + 'Store')}}</span>
                 </template>
             </bk-table-column>
             <bk-table-column :label="$t('repoQuota')" width="250">
@@ -95,14 +141,14 @@
             @change="current => handlerPaginationChange({ current })"
             @limit-change="limit => handlerPaginationChange({ limit })">
         </bk-pagination>
-        <create-repo-dialog ref="createRepo" @refresh="handlerPaginationChange()"></create-repo-dialog>
+        <create-repo-dialog ref="createRepo" :store-type="currentStoreType" @refresh="handlerPaginationChange()" @close="onCloseDialog"></create-repo-dialog>
     </div>
 </template>
 <script>
     import OperationList from '@repository/components/OperationList'
     import createRepoDialog from '@repository/views/repoList/createRepoDialog'
     import { mapState, mapActions } from 'vuex'
-    import { repoEnum } from '@repository/store/publicEnum'
+    import { repoEnum, storeTypeEnum } from '@repository/store/publicEnum'
     import { formatDate, convertFileSize } from '@repository/utils'
     export default {
         name: 'repoList',
@@ -111,11 +157,13 @@
             return {
                 MODE_CONFIG,
                 repoEnum,
+                storeTypeEnum, // 仓库类型（本地/远程/虚拟）
                 isLoading: false,
                 repoList: [],
                 query: {
                     name: this.$route.query.name,
-                    type: this.$route.query.type
+                    type: this.$route.query.type,
+                    category: this.$route.query.category
                 },
                 value: 20,
                 pagination: {
@@ -123,7 +171,9 @@
                     current: 1,
                     limit: 20,
                     limitList: [10, 20, 40]
-                }
+                },
+                isDropdownShow: false,
+                currentStoreType: '' // 当前选择的仓库类型
             }
         },
         computed: {
@@ -148,6 +198,10 @@
                 'deleteRepoList',
                 'getRepoListWithoutPage'
             ]),
+            // 关闭弹窗后需要将当前选中的仓库类型置为初始值，否则会导致再次打开同一种类型的弹窗时逻辑错误，(远程仓库和虚拟仓库也会默认选中generic仓库)
+            onCloseDialog () {
+                this.currentStoreType = ''
+            },
             getListData () {
                 this.isLoading = true
                 this.getRepoListWithoutPage({
@@ -189,10 +243,17 @@
                 })
                 this.getListData()
             },
-            createRepo () {
+            // 点击下拉菜单，隐藏下拉框，打开创建仓库弹窗
+            handlerCreateStore (type) {
+                this.$refs.dropdownHover.hide()
+                this.isDropdownShow = false
+                this.createRepo(type)
+            },
+            createRepo (type) {
+                this.currentStoreType = type
                 this.$refs.createRepo.showDialogHandler()
             },
-            toPackageList ({ projectId, repoType, name }) {
+            toPackageList ({ projectId, repoType, name, category }) {
                 this.$router.push({
                     name: repoType === 'generic' ? 'repoGeneric' : 'commonList',
                     params: {
@@ -200,7 +261,8 @@
                         repoType
                     },
                     query: {
-                        repoName: name
+                        repoName: name,
+                        storeType: category?.toLowerCase() || ''
                     }
                 })
             },
@@ -251,6 +313,22 @@
         ::v-deep .bk-tooltip-ref {
             display: block;
         }
+    }
+    // 解决创建按钮右边icon图标没有垂直居中的问题
+    ::v-deep .bk-dropdown-menu .bk-dropdown-trigger .right-icon {
+        top: 0;
+    }
+    .dropdown-list-info{
+        color: #8797aa;
+        margin-left: -24px;
+    }
+    
+    ::v-deep .bk-dropdown-menu .bk-dropdown-list>li>a{
+        height: 60px;
+        line-height: 26px;
+    }
+    ::v-deep .bk-dropdown-menu .bk-dropdown-list {
+        max-height: 220px;
     }
 }
 </style>
