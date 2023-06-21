@@ -782,5 +782,6 @@
     "virtualStoreInfo":"将本地和远程软件包合并到一个地方",
     "correctDependencies":"正向依赖",
     "plugins":"插件",
-    "reverseDependencies":"反向依赖"
+    "reverseDependencies":"反向依赖",
+    "batchDownload":"批量下载"
 }

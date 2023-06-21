@@ -771,5 +771,6 @@
     "virtualStoreInfo":"Combine local and remote packages in one place",
     "correctDependencies":"Correct dependencies",
     "plugins":"Plugins",
-    "reverseDependencies":"Reverse dependencies"
+    "reverseDependencies":"Reverse dependencies",
+    "batchDownload":"Batch download"
 }
