@@ -71,7 +71,7 @@
         },
         data () {
             return {
-                filterTime: [zeroTime(before(30)), nowTime.toDate()],
+                filterTime: [],
                 showExportDialog: false,
                 exportTime: [zeroTime(before(30)), nowTime.toDate()],
                 exportStatus: 'ALL',
@@ -88,19 +88,19 @@
                 },
                 shortcuts: [
                     {
-                        text: this.$t('last 7 days'),
+                        text: this.$t('lastSevenDays'),
                         value () {
                             return [zeroTime(before(7)), nowTime.toDate()]
                         }
                     },
                     {
-                        text: this.$t('last 15 days'),
+                        text: this.$t('lastFifteenDays'),
                         value () {
                             return [zeroTime(before(15)), nowTime.toDate()]
                         }
                     },
                     {
-                        text: this.$t('last 30 days'),
+                        text: this.$t('lastThirtyDays'),
                         value () {
                             return [zeroTime(before(30)), nowTime.toDate()]
                         }
