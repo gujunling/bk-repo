@@ -196,6 +196,7 @@
     import previewBasicFileDialog from './previewBasicFileDialog'
     import compressedFileTable from './compressedFileTable'
     import { convertFileSize, formatDate, debounce } from '@repository/utils'
+    import { customizeDownloadFile } from '@repository/utils/downloadFile'
     import { getIconName } from '@repository/store/publicEnum'
     import { mapState, mapMutations, mapActions } from 'vuex'
 
@@ -694,15 +695,8 @@
                 })
             },
             handlerMultiDownload () {
-                const commonPath = this.selectedTreeNode.fullPath
-                const ids = this.multiSelect.map(r => r.id)
-                const url = `${this.projectId}/${this.repoName}/${encodeURIComponent(commonPath)}?id=<${ids.join(':')}>`
-                this.$ajax.get(`/generic/multi/false/${url}`).then(() => {
-                    window.open(
-                        '/web' + `/generic/multi/true/${url}`,
-                        '_self'
-                    )
-                })
+                const fullPaths = this.multiSelect.map(r => r.fullPath)
+                customizeDownloadFile(this.projectId, this.repoName, fullPaths)
             },
             handlerForbid ({ fullPath, metadata: { forbidStatus } }) {
                 this.forbidMetadata({
