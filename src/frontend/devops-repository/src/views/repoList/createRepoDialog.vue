@@ -8,7 +8,7 @@
         <bk-form class="mr10 repo-base-info" :label-width="140" :model="repoBaseInfo" :rules="rules" ref="repoBaseInfo">
             <bk-form-item :label="$t('repoType')" :required="true" property="type" error-display-type="normal">
                 <bk-radio-group v-model="repoBaseInfo.type" class="repo-type-radio-group" @change="changeRepoType">
-                    <bk-radio-button v-for="repo in filterRepoEnum" :key="repo" :value="repo">
+                    <bk-radio-button v-for="repo in filterRepoEnum" :key="repo.label" :value="repo.value">
                         <div class="flex-column flex-center repo-type-radio">
                             <Icon size="32" :name="repo.value" />
                             <span>{{repo.label}}</span>
@@ -24,14 +24,14 @@
             </bk-form-item>
             <template v-if="storeType === 'remote'">
                 <bk-form-item :label="$t('address')" :required="true" property="url" error-display-type="normal">
-                    <bk-input style="width:400px" v-model.trim="repoBaseInfo.url"></bk-input>
+                    <bk-input class="w480" v-model.trim="repoBaseInfo.url"></bk-input>
                     <bk-button theme="primary" :disabled="disableTestUrl" :loading="disableTestUrl" @click="onClickTestRemoteUrl">{{ $t('testRemoteUrl') }}</bk-button>
                 </bk-form-item>
                 <bk-form-item :label="$t('account')" property="credentials.username" error-display-type="normal">
-                    <bk-input style="width:400px" v-model.trim="repoBaseInfo.credentials.username"></bk-input>
+                    <bk-input class="w480" v-model.trim="repoBaseInfo.credentials.username"></bk-input>
                 </bk-form-item>
                 <bk-form-item :label="$t('password')" property="credentials.password" error-display-type="normal">
-                    <bk-input style="width:400px" type="password" v-model.trim="repoBaseInfo.credentials.password"></bk-input>
+                    <bk-input class="w480" type="password" v-model.trim="repoBaseInfo.credentials.password"></bk-input>
                 </bk-form-item>
                 <bk-form-item :label="$t('networkProxy')" property="switcher">
                     <template>
@@ -41,16 +41,16 @@
                 </bk-form-item>
                 <template v-if="repoBaseInfo.network.switcher">
                     <bk-form-item label="IP" property="network.proxy.host" :required="true" error-display-type="normal">
-                        <bk-input style="width:400px" v-model.trim="repoBaseInfo.network.proxy.host"></bk-input>
+                        <bk-input class="w480" v-model.trim="repoBaseInfo.network.proxy.host"></bk-input>
                     </bk-form-item>
                     <bk-form-item :label="$t('port')" property="network.proxy.port" :required="true" error-display-type="normal">
-                        <bk-input style="width:400px" type="number" :max="65535" :min="1" v-model.trim="repoBaseInfo.network.proxy.port"></bk-input>
+                        <bk-input class="w480" type="number" :max="65535" :min="1" v-model.trim="repoBaseInfo.network.proxy.port"></bk-input>
                     </bk-form-item>
                     <bk-form-item :label="$t('account')" property="network.proxy.username">
-                        <bk-input style="width:400px" v-model.trim="repoBaseInfo.network.proxy.username"></bk-input>
+                        <bk-input class="w480" v-model.trim="repoBaseInfo.network.proxy.username"></bk-input>
                     </bk-form-item>
                     <bk-form-item :label="$t('password')" property="network.proxy.password">
-                        <bk-input style="width:400px" type="password" v-model.trim="repoBaseInfo.network.proxy.password"></bk-input>
+                        <bk-input class="w480" type="password" v-model.trim="repoBaseInfo.network.proxy.password"></bk-input>
                     </bk-form-item>
                 </template>
             </template>
@@ -69,7 +69,7 @@
                 <bk-form-item :label="$t('uploadTargetStore')" property="uploadTargetStore">
                     <bk-select
                         v-model="repoBaseInfo.deploymentRepo"
-                        style="width:300px;"
+                        class="w480"
                         :show-empty="false"
                         :placeholder="$t('pleaseSelect') + $t('uploadTargetStore')">
                         <bk-option v-for="item in deploymentRepoCheckList" :key="item.name" :id="item.name" :name="item.name">
@@ -424,10 +424,13 @@
         watch: {
             storeType: {
                 handler (val) {
-                    //  远程及虚拟仓库，目前只支持maven、npm、pypi、nuget四种仓库
-                    this.filterRepoEnum = val === 'local' ? repoEnum : repoEnum.filter(item => repoSupportEnum.includes(item))
+                    //  远程及虚拟仓库，目前只支持maven、npm、pypi、nuget四种仓库,
+                    // 因为可能支持创建的远程及虚拟仓库，在本地仓库支持创建的仓库中不存在，所以需要两者匹配才能在创建远程及虚拟仓库时显示
+                    this.filterRepoEnum = val === 'local'
+                        ? repoEnum
+                        : repoSupportEnum.map((item) => repoEnum.find((st) => item.value === st.value))
                     // 因为远程仓库和虚拟仓库没有generic类型且远程仓库支持的制品类型有限，所以需要将其重新赋默认值
-                    this.repoBaseInfo.type = this.filterRepoEnum[0] || ''
+                    this.repoBaseInfo.type = this.filterRepoEnum[0]?.value || ''
                 }
             },
             deploymentRepoCheckList: {
