@@ -13,7 +13,7 @@
             <bk-select
                 v-model="query.category"
                 class="ml10 w250"
-                @change="handlerPaginationChange()"
+                @change="handlerPaginationChange"
                 :placeholder="$t('allStoreTypes')">
                 <bk-option v-for="category in storeTypeEnum" :key="category.id" :id="category.id" :name="$t(category.name)">
                     <div class="flex-align-center">
@@ -27,10 +27,10 @@
                 class="ml10 w250"
                 @change="handlerPaginationChange"
                 :placeholder="$t('allTypes')">
-                <bk-option v-for="type in repoEnum.filter(r => r !== 'generic')" :key="type" :id="type" :name="type">
+                <bk-option v-for="type in repoEnum.filter(r => r.value !== 'generic')" :key="type.value" :id="type.value" :name="type.label">
                     <div class="flex-align-center">
-                        <Icon size="20" :name="type" />
-                        <span class="ml10 flex-1 text-overflow">{{type}}</span>
+                        <Icon size="20" :name="type.value" />
+                        <span class="ml10 flex-1 text-overflow">{{type.label}}</span>
                     </div>
                 </bk-option>
             </bk-select>
