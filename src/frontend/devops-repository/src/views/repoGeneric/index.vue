@@ -557,7 +557,7 @@
                     type: 'rename',
                     name,
                     path: fullPath,
-                    title: `${this.$t('rename')} (${name})`
+                    title: `${this.$t('rename') + this.$t('space')} (${name})`
                 })
             },
             addFolder ({ fullPath }) {
@@ -566,7 +566,7 @@
                     loading: false,
                     type: 'add',
                     path: fullPath + '/',
-                    title: `${this.$t('create') + this.$t('folder')}`
+                    title: `${this.$t('create') + this.$t('space') + this.$t('folder')}`
                 })
             },
             handlerScan ({ name, fullPath }) {
@@ -595,7 +595,7 @@
                     repoName: this.repoName,
                     show: true,
                     loading: false,
-                    title: `${this.$t('share')} (${name})`,
+                    title: `${this.$t('share') + this.$t('space')} (${name})`,
                     path: fullPath,
                     user: [],
                     ip: [],
