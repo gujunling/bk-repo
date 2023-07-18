@@ -242,6 +242,19 @@
                 this.sortDirection = order === 'ascending' ? 'ASC' : 'DESC'
                 this.handlerPaginationChange()
             },
+            handleClickCloseDrawer () {
+                this.drawerSlider.isShow = false
+            },
+            handleClickCreatePlan () {
+                this.drawerSlider = {
+                    isShow: true,
+                    title: this.$t('createPlan'),
+                    rowsData: {
+                        ...this.$route.params,
+                        routeName: 'createPlan'
+                    }
+                }
+            },
             editPlanHandler ({ name, key, lastExecutionStatus, replicaType }) {
                 if (lastExecutionStatus || replicaType === 'REAL_TIME') return
                 this.drawerSlider = {
