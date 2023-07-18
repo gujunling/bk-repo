@@ -224,19 +224,6 @@
                     }
                 })
             },
-            handleClickCloseDrawer () {
-                this.drawerSlider.isShow = false
-            },
-            handleClickCreatePlan () {
-                this.drawerSlider = {
-                    isShow: true,
-                    title: this.$t('createPlan'),
-                    rowsData: {
-                        ...this.$route.params,
-                        routeName: 'createPlan'
-                    }
-                }
-            },
             handleSortChange ({ prop, order }) {
                 this.sortType = order ? prop : 'CREATED_TIME'
                 this.sortDirection = order === 'ascending' ? 'ASC' : 'DESC'
