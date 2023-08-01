@@ -27,45 +27,45 @@
 
 package com.tencent.bkrepo.analyst.pojo.response
 
+import com.fasterxml.jackson.annotation.JsonInclude
+import com.tencent.bkrepo.common.analysis.pojo.scanner.Level
 import io.swagger.annotations.ApiModel
 import io.swagger.annotations.ApiModelProperty
 
-@ApiModel("扫描方案信息")
-data class ScanPlanInfo(
-    @ApiModelProperty("方案id")
-    val id: String,
-    @ApiModelProperty("方案名")
-    val name: String?,
-    @ApiModelProperty("方案类型")
-    val planType: String,
-    @ApiModelProperty("扫描类型")
-    val scanTypes: List<String>,
-    @ApiModelProperty("projectId")
-    val projectId: String,
-    @ApiModelProperty("方案状态")
-    val status: String,
-    @ApiModelProperty("累计扫描制品数")
-    val artifactCount: Long = 0,
+@ApiModel("质量规则")
+@JsonInclude(JsonInclude.Include.NON_NULL)
+data class ScanQuality(
     @ApiModelProperty("严重漏洞数")
-    val critical: Long = 0,
+    val critical: Long?,
     @ApiModelProperty("高危漏洞数")
-    val high: Long = 0,
+    val high: Long?,
     @ApiModelProperty("中危漏洞数")
-    val medium: Long = 0,
+    val medium: Long?,
     @ApiModelProperty("低危漏洞数")
-    val low: Long = 0,
-    @ApiModelProperty("漏洞总数")
-    val total: Long = 0,
-    @ApiModelProperty("创建者")
-    val createdBy: String,
-    @ApiModelProperty("创建时间")
-    val createdDate: String,
-    @ApiModelProperty("修改者")
-    val lastModifiedBy: String,
-    @ApiModelProperty("修改时间")
-    val lastModifiedDate: String,
-    @ApiModelProperty("最后扫描时间")
-    val lastScanDate: String?,
-    @ApiModelProperty("是否只读")
-    val readOnly: Boolean = false
-)
+    val low: Long?,
+    @ApiModelProperty("扫描未完成是否禁用制品")
+    val forbidScanUnFinished: Boolean?,
+    @ApiModelProperty("质量规则未通过是否禁用制品")
+    val forbidQualityUnPass: Boolean?,
+    @ApiModelProperty("许可是否推荐使用")
+    val recommend: Boolean?,
+    @ApiModelProperty("许可是否合规")
+    val compliance: Boolean?,
+    @ApiModelProperty("许可是否未知")
+    val unknown: Boolean?
+) {
+
+    companion object {
+        fun create(map: Map<String, Any>) = ScanQuality(
+            critical = map[Level.CRITICAL.levelName] as? Long,
+            high = map[Level.HIGH.levelName] as? Long,
+            medium = map[Level.MEDIUM.levelName] as? Long,
+            low = map[Level.LOW.levelName] as? Long,
+            forbidScanUnFinished = map[ScanQuality::forbidScanUnFinished.name] as? Boolean,
+            forbidQualityUnPass = map[ScanQuality::forbidQualityUnPass.name] as? Boolean,
+            recommend = map[ScanQuality::recommend.name] as? Boolean,
+            compliance = map[ScanQuality::compliance.name] as? Boolean,
+            unknown = map[ScanQuality::unknown.name] as? Boolean
+        )
+    }
+}
