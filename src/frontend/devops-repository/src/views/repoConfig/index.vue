@@ -347,9 +347,9 @@
             showProxyConfigTab () {
                 return this.repoBaseInfo.category === 'COMPOSITE' && ['maven', 'pypi', 'npm', 'composer', 'nuget'].includes(this.repoType)
             },
-            // showCleanConfigTab () {
-            //     return ['maven', 'docker', 'npm', 'helm', 'generic'].includes(this.repoType)
-            // },
+            showCleanConfigTab () {
+                return ['maven', 'docker', 'npm', 'helm', 'generic'].includes(this.repoType)
+            },
             repoAddress () {
                 const { repoType, name } = this.repoBaseInfo
                 if (repoType === 'docker') {
