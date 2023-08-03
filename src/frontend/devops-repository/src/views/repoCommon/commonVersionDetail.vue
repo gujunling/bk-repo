@@ -153,9 +153,9 @@
                 </section>
             </article>
         </bk-tab-panel>
-        <bk-tab-panel v-if="detailType === 'maven'" name="rely" :label="$t('dependencies')">
+        <!-- <bk-tab-panel v-if="detailType === 'maven'" name="rely" :label="$t('dependencies')">
             <maven-dependencies></maven-dependencies>
-        </bk-tab-panel>
+        </bk-tab-panel> -->
     </bk-tab>
 </template>
 <script>
@@ -164,7 +164,7 @@
     import ScanTag from '@repository/views/repoScan/scanTag'
     import forbidTag from '@repository/components/ForbidTag'
     import metadataTag from '@repository/views/repoCommon/metadataTag'
-    import mavenDependencies from '@repository/views/repoCommon/mavenDependencies'
+    // import mavenDependencies from '@repository/views/repoCommon/mavenDependencies'
     import { mapState, mapActions } from 'vuex'
     import { convertFileSize, formatDate } from '@repository/utils'
     import repoGuideMixin from '@repository/views/repoCommon/repoGuideMixin'
@@ -175,8 +175,8 @@
             OperationList,
             ScanTag,
             forbidTag,
-            metadataTag,
-            mavenDependencies
+            metadataTag
+            // mavenDependencies
         },
         mixins: [repoGuideMixin],
         data () {
