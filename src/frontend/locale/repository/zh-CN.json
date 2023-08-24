@@ -623,6 +623,11 @@
         "SUCCESS": "已完成",
         "FAILED": "同步异常"
     },
+    "planLogDetailStatusEnum": {
+        "SUCCESS": "同步成功",
+        "FAILED": "同步失败",
+        "RUNNING": "进行中"
+    },
     "conflictStrategy":"冲突策略",
     "syncObject":"同步对象",
     "skipConflictLabel":"跳过冲突",
@@ -647,7 +652,6 @@
     "addFilePathPlaceHolder":"请输入文件路径，以换行分隔",
     "copyPlan":"复制计划",
     "syncStatus":"同步状态",
-    "syncNode": "同步节点",
     "notExecuted":"未执行",
     "filePath":"文件路径",
     "successNum":"成功数量",
@@ -656,9 +660,9 @@
     "note":"备注",
     "NO": "编号",
     "runningStatus":"运行状态",
-    "startExecutionTime":"开始执行时间",
-    "endExecutionTime":"结束执行时间",
-    "planLogTitle":"{name} 执行日志",
+    "startExecutionTime":"开始时间",
+    "endExecutionTime":"结束时间",
+    "planLogTitle":"{name} 执行任务记录",
     "nodeTypeEnum": {
         "CENTER": "中心节点",
         "EDGE": "边缘节点",
@@ -771,5 +775,16 @@
     "batchDownloadingInfo":"您批量选中的文件正在进行下载中，请稍候...",
     "errorPlanNameTips":"请输入 2-32 位字符的计划名称",
     "noBusinessTip": "无业务权限",
-    "noBusinessSubTip": "无该应用访问权限"
+    "noBusinessSubTip": "无该应用访问权限",
+    "planLogErrorReason":"异常原因",
+    "noDistributionRecord":"日志不记载制品/文件的分发记录",
+    "planTaskLogInfo":"[{name}] 已设置不记录制品/文件的日志，无法查看任务日志详情",
+    "planLogEnum" :{
+        "total": "同步总数量",
+        "success": "成功数量",
+        "fail": "失败数量",
+        "conflict": "冲突数量"
+    },
+    "planLogReserve":"日志保留天数(60天内)：",
+    "planRecordReserveDaysInfo":"请输入 1-60 之间的数字"
 }

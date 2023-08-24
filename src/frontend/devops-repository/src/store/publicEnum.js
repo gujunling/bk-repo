@@ -79,6 +79,13 @@ export const asyncPlanStatusEnum = {
     FAILED: '同步异常'
 }
 
+// 制品分发日志详情执行状态
+export const planLogDetailStatusEnum = {
+    SUCCESS: '同步成功',
+    FAILED: '同步失败',
+    RUNNING: '运行中'
+}
+
 // 扫描方案类型
 export const scanTypeEnum = {
     GENERIC: 'Generic制品分析',
@@ -143,3 +150,16 @@ export const FILTER_METHOD_SEVERITY = 1
 export const FILTER_METHOD_RISKY_COMPONENT = 2
 // 通过风险组件版本过滤
 export const FILTER_METHOD_RISKY_COMPONENT_VERSION = 3
+
+export const planLogEnum = {
+    total: '同步总数量',
+    success: '成功数量',
+    fail: '失败数量',
+    conflict: '冲突数量'
+}
+
+export const conflictStrategyEnum = {
+    SKIP: '跳过冲突',
+    OVERWRITE: '替换制品',
+    FAST_FAIL: '终止同步'
+}

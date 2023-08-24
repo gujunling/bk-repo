@@ -610,6 +610,11 @@
         "SUCCESS": "Success",
         "FAILED": "Failed"
     },
+    "planLogDetailStatusEnum": {
+        "SUCCESS": "Success",
+        "FAILED": "Failed",
+        "RUNNING": "Running"
+    },
     "conflictStrategy":"Conflict Strategy",
     "syncObject":"Object",
     "skipConflictLabel":"Skip",
@@ -634,7 +639,6 @@
     "addFilePathPlaceHolder":"Please enter file paths, separated by newlines",
     "copyPlan":"Copy plan",
     "syncStatus":"Status",
-    "syncNode": "Sync node",
     "notExecuted":"Not executed",
     "filePath":"filePath",
     "successNum":"number of successes",
@@ -645,7 +649,7 @@
     "runningStatus":"Running status",
     "startExecutionTime":"Starting time",
     "endExecutionTime":"End Time",
-    "planLogTitle":"{name} execution log",
+    "planLogTitle":"{name} execution task record",
     "usedQuotaCapacity":"Quota capacity used by the warehouse",
     "nodeTypeEnum": {
         "CENTER": "center",
@@ -754,14 +758,23 @@
     "noFilenameErrorInfo":"Sorry, the server got the file name abnormally, please try again later",
     "batchDownloadBackTypeErrorInfo":"Batch download of files failed, please try again later",
     "batchDownloadingInfo":"The files you selected in batches are being downloaded, please wait...",
-    "inFolderSearchPlaceholder":"Please enter name to search",
-    "folderDirectory":"Folder directory",
     "exportReport":"Export report",
     "ExportRecordFilter":"Export record filter",
     "scanTime":"Scan time",
     "exportReportInfo":"Artifact scan record is generating report, please wait ...",
-    "exportLeakReportInfo":"Security vulnerability information is being reported, please wait...",
+    "exportLeakReportInfo":"Security vulnerability information is being reported, please wait...",   
     "errorPlanNameTips":"Please enter a plan name of 2-32 characters",
     "noBusinessTip": "No Business Authorization",
-    "noBusinessSubTip": "No Access To This App"
+    "noBusinessSubTip": "No Access To This App",
+    "planLogErrorReason":"Error reason",
+    "noDistributionRecord":"The log does not record the distribution records of products/documents",
+    "planTaskLogInfo":"[{name}] has been set not to record product/file logs, and cannot view task log details",
+    "planLogEnum" :{
+        "total": "Total number of syncs",
+        "success": "Number of successes",
+        "fail": "Number of failures",
+        "conflict": "Number of conflicts"
+    },
+    "planLogReserve":"Log reserve days(within 60 days):",
+    "planRecordReserveDaysInfo":"Please enter a number between 1-60"
 }

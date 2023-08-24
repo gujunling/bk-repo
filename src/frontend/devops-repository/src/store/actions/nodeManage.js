@@ -129,7 +129,7 @@ export default {
         )
     },
     // 计划执行日志制品详情
-    getPlanLogPackageList (_, { id, status, packageName, repoName, clusterName, path, current = 1, limit = 10 }) {
+    getPlanLogPackageList (_, { id, status, artifactName, repoName, clusterName, current = 1, limit = 10 }) {
         return Vue.prototype.$ajax.get(
             `${prefix}/task/record/detail/page/${id}`,
             {
@@ -137,12 +137,21 @@ export default {
                     pageNumber: current,
                     pageSize: limit,
                     status: status || undefined,
-                    packageName: packageName || undefined,
+                    artifactName: artifactName || undefined,
                     repoName: repoName || undefined,
-                    clusterName: clusterName || undefined,
-                    path: path || undefined
+                    clusterName: clusterName || undefined
                 }
             }
+        )
+    },
+    /**
+     *  根据 recordId 查询任务执行日志详情总览，显示同步数量(同步总次数、成功、失败、冲突次数)
+     * @param {*} id 任务执行日志唯一id
+     * @returns
+     */
+    getPlanLogDetailOverview (_, { id }) {
+        return Vue.prototype.$ajax.get(
+            `${prefix}/task/record/detail/overview/${id}`
         )
     }
 }
