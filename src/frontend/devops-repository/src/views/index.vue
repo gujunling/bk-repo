@@ -68,7 +68,7 @@
                             !(MODE_CONFIG === 'ci') && 'projectManage',
                             'userManage',
                             'nodeManage',
-                            // 'securityConfig',
+                            'securityConfig',
                             this.userInfo.admin && 'planManage',
                             'repoAudit'
                         ].filter(Boolean)
